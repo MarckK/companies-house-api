@@ -1,6 +1,7 @@
 # import os
 import csv
 import pprint
+import pandas as pd
 
 DATAFILE = "UK_Gender_Pay_Gap_Data_2017_to_2018.csv"
 
