@@ -1,10 +1,8 @@
 import os
 import json
-# import csv
 from pathlib import Path
 
 import requests
-# import dateutil.parser
 
 from dotenv import load_dotenv
 
@@ -21,7 +19,7 @@ BASE_URL = 'https://api.companieshouse.gov.uk/company/'
 
 # Each CRN needs to be 8 characters long.
 #The first two characters might be SC, which designates Scotland
-#Example company number.
+#Example company number:
 COMPANY_NUM = '00000006'
 
 def pretty_print(data, indent=4):
@@ -113,15 +111,18 @@ def format_active_officers_info(query_comp_name, query_off_info, company_num):
 
     pretty_print(company)
     # Save the dictionary of active officer's information into a file
-    print('\nSaving active officers\' information for {}:{} into file {}.txt ...'
-          .format(company_name, company_num, company_num))
-    with open(company_num + '.txt', 'w') as file:
+
+    # print('\nSaving active officers\' information for {}:{} into file {}.txt ...'
+    #       .format(company_name, company_num, company_num))
+    # with open(company_num + '.txt', 'w') as file:
+    #     json.dump(company, file, indent=4)
+    # return company
+    print('\nSaving active officers\' information...')
+    with open('demo_officers_information.txt', 'a') as file:
         json.dump(company, file, indent=4)
     return company
 
 
-def main():
-    format_active_officers_info(query_company_name, query_officers_info, COMPANY_NUM)
 
 if __name__ == '__main__':
-    main()
+    format_active_officers_info(query_company_name, query_officers_info, COMPANY_NUM)
