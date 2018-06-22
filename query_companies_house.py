@@ -27,7 +27,7 @@ def pretty_print(data, indent=4):
     if isinstance(data, dict):
         print(json.dumps(data, indent=indent, sort_keys=True))
     else:
-        print(data.text)
+        print(data)
 
 
 def query_company_name(company_num):
@@ -38,17 +38,19 @@ def query_company_name(company_num):
     INPUT: company registration number: string
     OUTPUT: company's registered name: string
     """
+    # print("\nRetrieving name for company:{} ...".format(company_num))
     response = requests.get(BASE_URL + company_num, auth=(API_KEY, ''))
     # print("\nRetrieving name for company:{} ...".format(company_num))
-    data = response.json()
 
     if response.status_code == requests.codes.ok:
+        data = response.json()
         company_name = data["company_name"]
         # print(company_name)
         # print('Received a response with status code: ', response.status_code)
         return company_name
     else:
-        response.raise_for_status()
+        return 'No name listed'
+        # response.raise_for_status()
 
 def query_officers_info(company_num):
     """
@@ -61,14 +63,14 @@ def query_officers_info(company_num):
     """
     response = requests.get(BASE_URL + company_num + '/officers', auth=(API_KEY, ''))
     # print("\nRetrieving officers' info for company:{} ...".format(company_num))
-    data = response.json()
 
     if response.status_code == requests.codes.ok:
         # print('Received a response with status code: ', response.status_code)
-        # pretty_print(data)
-        return data
+        # pretty_print(response.json())
+        return response.json()
     else:
-        response.raise_for_status()
+        return 'CRN not listed with Companies House'
+        # response.raise_for_status()
 
 def format_active_officers_info(query_comp_name, query_off_info, company_num):
     """
@@ -84,30 +86,33 @@ def format_active_officers_info(query_comp_name, query_off_info, company_num):
     """
     company_name = query_comp_name(company_num)
     officers_data = query_off_info(company_num)
-    num_active = int(officers_data["active_count"])
-    # pretty_print(officers_data)
-    # num_total = int(officers_data["total_results"])
-    # print("\nTotal number of officers in company's history: ", num_total)
-    # print("\nNumber of currently active officers: ", num_active)
+    if officers_data != 'CRN not listed with Companies House':
+        num_active = int(officers_data["active_count"])
+        # pretty_print(officers_data)
+        # num_total = int(officers_data["total_results"])
+        # print("\nTotal number of officers in company's history: ", num_total)
+        # print("\nNumber of currently active officers: ", num_active)
 
-    active_officer_names = []
-    active_officer_info = []
+        active_officer_names = []
+        active_officer_info = []
 
-    active_officers = list(
-        filter(lambda officer: "resigned_on" not in officer, officers_data["items"])
-        )
-    for officer in active_officers:
-        active_officer_names.append(officer["name"])
-        active_officer_info.append(officer)
-        # pretty_print(officer)
+        active_officers = list(
+            filter(lambda officer: "resigned_on" not in officer, officers_data["items"])
+            )
+        for officer in active_officers:
+            active_officer_names.append(officer["name"])
+            active_officer_info.append(officer)
+            # pretty_print(officer)
 
-    company = {
-        'Company_Name': company_name,
-        'Company_Registration_Number': company_num,
-        'Number_Active_Officers': num_active,
-        'Names_Active_Officers': active_officer_names,
-        'Officers_Active_Full_Info': active_officer_info,
-    }
+        company = {
+            'Company_Name': company_name,
+            'Company_Registration_Number': company_num,
+            'Number_Active_Officers': num_active,
+            'Names_Active_Officers': active_officer_names,
+            'Officers_Active_Full_Info': active_officer_info,
+        }
+    else:
+        company = '{} not registered with Companies House'.format(company_num)
 
     pretty_print(company)
     # Save the dictionary of active officer's information into a file
@@ -117,8 +122,8 @@ def format_active_officers_info(query_comp_name, query_off_info, company_num):
     # with open(company_num + '.txt', 'w') as file:
     #     json.dump(company, file, indent=4)
     # return company
-    print('\nSaving active officers\' information...')
-    with open('demo_officers_information.txt', 'a') as file:
+    # print('\nSaving active officers\' information...')
+    with open('all_officers_information.txt', 'a') as file:
         json.dump(company, file, indent=4)
     return company
 
