@@ -7,14 +7,10 @@
     - Option 1 - Use the dataset prepared by GenderPayGap mentors
     - Option 2 - Run a script to collect additional data
         - Preparing your local environment
-        - Customising a query - endpoint
-        - Customising a query - parameters
 3. [Working with the Data](#three-working-with-the-data)
     - Data structure
-    - Loading data from a text file
-    - Access information within the data
 4. [Contributions](#four-contributions)
-5. [Authour](#five-authour)
+5. [Author](#five-authour)
 
 ## :one: Introduction
 
@@ -35,13 +31,13 @@ Mentors of the GenderPayGapHack joined force :muscle::boom:
 
 We analysed a large number of APIs, hand-picked ones that suited our purpose, and have created ready-to-use datasets.
 
-In case of Companies House API, we collected officer information for each currently active officer of the 10,000+ companies that supplied the data that makes up the UK Gender Pay Gap Data. The exact query used to collect this data can be found in [`generate_officer_data.py`](./generate_officer_data.py), and you can find the data in [](./).
+In case of Companies House API, we collected officer information for each currently active officer of the 10,000+ companies that supplied the data that makes up the UK Gender Pay Gap Data. The exact query used to collect this data can be found in [`Code for querying csv for all CRNs and then querying CH for all active officers.ipynb`](./Code for querying csv for all CRNs and then querying CH for all active officers.ipynb), and you can find the data in the Google Drive of collected data that we have gathered for this data hack.
 
-You're welcome to download the file and explore the data. For a detailed explanation of the data structure, how to load the data from the file etc., please see the section [:three: Working with the Data](#working-with-the-data).
+You're welcome to download the file from the Google Drive and explore the data. Alternatively, you can run the Jupyter notebook file, [`Code for querying csv for all CRNs and then querying CH for all active officers.ipynb`](./Code for querying csv for all CRNs and then querying CH for all active officers.ipynb), to run the scripts to collect the currently active officers data from Companies House and store that data in a file called `all_officers_information.txt`.
 
 ### Option 2 - Run a script to collect additional data
 
-You can also use the script [`query_companies_house.py`](./query_companies_house.py) provided in this directory as well to make your own custom queries.
+You can also use the script [`query_companies_house.py`](./query_companies_house.py) provided in this directory as well to query Companies House. An example script of how you could select a set of Company Registration Numbers to use to query the Companies House API can be found in [`Demo_Code_for_querying_csv.ipynb`](./Demo_Code_for_querying_csv.ipynb). The results of that demo query can be found in [`demo_officers_information.txt`](./demo_officers_information.txt).
 
 We use [Requests](http://docs.python-requests.org/en/master/) to make HTTP GET requests to the Companies House API. This is a great opportunity to learn about Requests if you aren't familiar, as you can make HTTP to any APIs you can think of with Requests under your toolbelt. It's a really powerful tool :)
 
@@ -68,10 +64,11 @@ Right, in order to start making queries, you need a bit of preparation to get yo
     │        .env  <-- Here!
     │        README.md
     │        query_companies_house.py
-    │        query_gpg_data.py
-    │        UK_Gender_Pay_Gap_Data_2017_to_2018.csv
+    │        Code for querying csv for all CRNs and then querying CH for all active officers.ipynb
     │        Demo Code for querying csv.ipynb
+    |        demo_officers_information.txt
     │        environment.yaml
+    |        UK_Gender_Pay_Gap_Data_2017_to_2018.csv
     │      ...
     │
     └─── another-project
@@ -91,4 +88,110 @@ Right, in order to start making queries, you need a bit of preparation to get yo
     ```
 
 8. Now you should be all ready to fire up a query :boom: `$ python query_companies_house.py`
-    If everything goes well, you should see the response printed out in the console and you should have a file called `00000006.txt` which stores the dictionary of data from the Companies House API.
+    If everything goes well, you should see the response printed out in the console and you should have a file called `00000006.txt` which stores a dictionary of data holding active officers information returned from the Companies House API for company with the Company Registration Number "00000006".
+    
+## :three: Working with the Data
+
+### :page_with_curl: Data structure
+
+For querying active officers information we have constructed a dictionary to structure the data we are gathering, which looks like this:
+
+```python
+{
+    "Company_Name": "MARINE AND GENERAL MUTUAL LIFE ASSURANCE SOCIETY",
+    "Company_Registration_Number": "00000006",
+    "Number_Active_Officers": 3,
+    "Names_Active_Officers": [
+        "PRINGLE, Martin",
+        "GALBRAITH, James",
+        "WALKER, Michael John"
+    ],
+    "Officers_Active_Full_Info": [
+        {
+            "officer_role": "secretary",
+            "links": {
+                "officer": {
+                    "appointments": "/officers/1UUfj2gDv9ZVoykvoy9hhEhXDcY/appointments"
+                }
+            },
+            "address": {
+                "premises": "Cms Cameron Mckenna Llp",
+                "country": "England",
+                "locality": "London",
+                "address_line_2": "78 Cannon Street",
+                "address_line_1": "Cannon Place",
+                "postal_code": "EC4N 6AF"
+            },
+            "name": "PRINGLE, Martin",
+            "appointed_on": "2016-09-13"
+        },
+        {
+            "links": {
+                "officer": {
+                    "appointments": "/officers/I-4OI1Rt7bqjbeWflGDl_s6KG6s/appointments"
+                }
+            },
+            "address": {
+                "address_line_2": "78 Cannon Street",
+                "locality": "London",
+                "premises": "Cms Cameron Mckenna Llp",
+                "address_line_1": "Cannon Place",
+                "postal_code": "EC4N 6AF",
+                "country": "England"
+            },
+            "occupation": "Company Director",
+            "appointed_on": "2015-03-01",
+            "country_of_residence": "United Kingdom",
+            "officer_role": "director",
+            "name": "GALBRAITH, James",
+            "date_of_birth": {
+                "month": 3,
+                "year": 1963
+            },
+            "nationality": "British"
+        },
+        {
+            "links": {
+                "officer": {
+                    "appointments": "/officers/Z7im4wk4V9mVRJ06XtXntHRjihI/appointments"
+                }
+            },
+            "address": {
+                "locality": "London",
+                "country": "England",
+                "postal_code": "EC4N 6AF",
+                "address_line_2": "78 Cannon Street",
+                "address_line_1": "Cannon Place",
+                "premises": "Cms Cameron Mckenna Llp"
+            },
+            "occupation": "Company Director",
+            "appointed_on": "2015-06-01",
+            "country_of_residence": "United Kingdom",
+            "officer_role": "director",
+            "name": "WALKER, Michael John",
+            "date_of_birth": {
+                "year": 1952,
+                "month": 10
+            },
+            "nationality": "British"
+        }
+    ]
+}
+```
+
+The Companies House API itself returns a JSON data structure that is described in the `CompanySearch resource` section on [Companies House API](https://developer.companieshouse.gov.uk/api/docs/search-overview/CompanySearch-resource.html) :point_left:
+
+Feel free to construct your own custom queries of the Companies House API. You can query for lots more data than just information on active officers!
+
+## :four: Contributions
+
+Please raise issues or pull requests as you see room for improvement :pray:
+
+## :five: Author
+
+### Kara de la Marck
+
+[Github](https://github.com/MarkK) | [Twitter](https://twitter.com/karamarck) | [Medium](https://medium.com/@karadelamarck)
+
+:rainbow: Organiser @ [codebar](https://codebar.io/)
+
