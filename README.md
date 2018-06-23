@@ -12,9 +12,10 @@
 4. [Contributions](#four-contributions)
 5. [Author](#five-authour)
 
+
 ## :one: Introduction
 
-In this section of the GenderPayGapHack, we explore the the 💷UK Gender Pay Gap Data 💷 and UK company information as returned by querying the UK Companies House API. We will initially be focusing on company officers.
+In this section of the GenderPayGapHack, we explore the the 💷UK Gender Pay Gap Data 💷 and UK company information as returned by querying the UK Companies House API. We will initially be focusing on information regarding active company officers.
 
 [Companies House API](https://developer.companieshouse.gov.uk/api/docs/index/gettingStarted/quickStart.html) is an authoritative source of company information: it provides a single API that exposes all company information delivered under the Companies Act and related legislation.
 
@@ -23,6 +24,10 @@ To be able to explore and query the Companies House API, you need to register a 
 Rate limiting is applied to the Companies House API: You can make up to 600 requests within a five-minute period. If you exceed this limit, you will receive a `429 Too Many Requests` HTTP status code for each request made within the remainder of the five-minute window. At the end of the period, your rate limit will reset back to its maximum value of 600 requests. This should be more than enough for you to play around on the day of the hack. However, please be aware that it _is_ possible to accidentally exceed the limit, e.g. by entering an infinite loop whilst making batch requests... :see_no_evil:
 
 ## :two: Instructions
+
+Setting up your machine:
+You will want to have Anaconda installed. If you don't already have it installed, please read this excellent tutorial on how to install and use [Anaconda and Jupyter](https://classroom.udacity.com/courses/ud1111)
+
 There are two options for you to work on this topic.
 
 ### Option 1 - Use precollected dataset
@@ -31,13 +36,13 @@ Mentors of the GenderPayGapHack joined force :muscle::boom:
 
 We analysed a large number of APIs, hand-picked ones that suited our purpose, and have created ready-to-use datasets.
 
-In case of Companies House API, we collected officer information for each currently active officer of the 10,000+ companies that supplied the data that makes up the UK Gender Pay Gap Data. The exact query used to collect this data can be found in [`Code for querying csv for all CRNs and then querying CH for all active officers.ipynb`](./Code for querying csv for all CRNs and then querying CH for all active officers.ipynb), and you can find the data in the Google Drive of collected data that we have gathered for this data hack.
+In case of Companies House API, we collected officer information for each currently active officer of the 10,000+ companies that supplied the data that makes up the UK Gender Pay Gap Data. The exact query used to collect this data can be found in [`query_csv_for_all_CRNs.ipynb`](./query_csv_for_all_CRNs.ipynb), and you can find the data in the Google Drive of collected data that we have gathered for this data hack.
 
-You're welcome to download the file from the Google Drive and explore the data. Alternatively, you can run the Jupyter notebook file, [`Code for querying csv for all CRNs and then querying CH for all active officers.ipynb`](./Code for querying csv for all CRNs and then querying CH for all active officers.ipynb), to run the scripts to collect the currently active officers data from Companies House and store that data in a file called `all_officers_information.txt`.
+You're welcome to download the file from the Google Drive and explore the data. Alternatively, you can run the Jupyter notebook file, [`query_csv_for_all_CRNs.ipynb`](./query_csv_for_all_CRNs.ipynb), to run the scripts to collect the currently active officers data from Companies House and store that data in a file called `all_officers_information.txt`.
 
 ### Option 2 - Run a script to collect additional data
 
-You can also use the script [`query_companies_house.py`](./query_companies_house.py) provided in this directory as well to query Companies House. An example script of how you could select a set of Company Registration Numbers to use to query the Companies House API can be found in [`Demo_Code_for_querying_csv.ipynb`](./Demo_Code_for_querying_csv.ipynb). The results of that demo query can be found in [`demo_officers_information.txt`](./demo_officers_information.txt).
+You can also use the script [`query_companies_house.py`](./query_companies_house.py) provided in this directory as well to query Companies House. An example script of how you could select a set of Company Registration Numbers to use to query the Companies House API can be found in [`demo_code_for_querying_csv.ipynb`](./demo_code_for_querying_csv.ipynb). The results of that demo query can be found in [`demo_officers_information.txt`](./demo_officers_information.txt).
 
 We use [Requests](http://docs.python-requests.org/en/master/) to make HTTP GET requests to the Companies House API. This is a great opportunity to learn about Requests if you aren't familiar, as you can make HTTP to any APIs you can think of with Requests under your toolbelt. It's a really powerful tool :)
 
@@ -64,8 +69,8 @@ Right, in order to start making queries, you need a bit of preparation to get yo
     │        .env  <-- Here!
     │        README.md
     │        query_companies_house.py
-    │        Code for querying csv for all CRNs and then querying CH for all active officers.ipynb
-    │        Demo Code for querying csv.ipynb
+    │        query_csv_for_all_CRNs.ipynb
+    │        demo_code_for_querying_csv.ipynb
     |        demo_officers_information.txt
     │        environment.yaml
     |        UK_Gender_Pay_Gap_Data_2017_to_2018.csv
@@ -88,7 +93,27 @@ Right, in order to start making queries, you need a bit of preparation to get yo
     ```
 
 8. Now you should be all ready to fire up a query :boom: `$ python query_companies_house.py`
-    If everything goes well, you should see the response printed out in the console and you should have a file called `00000006.txt` which stores a dictionary of data holding active officers information returned from the Companies House API for company with the Company Registration Number "00000006".
+    If everything goes well, you should see the response printed out in the console and you should have a file called `all_officers_information.txt` which stores a dictionary of data holding active officers' information returned from the Companies House API for the company with the Company Registration Number "00000006".
+    
+    If you would like your file to match the company number, find the following commented out code in `all_officers_information.txt`:
+    
+    ```python
+    # with open(company_num + '.txt', 'w') as file:
+    #     json.dump(company, file, indent=4)
+    # return company
+    ```
+    
+    Uncomment that code and comment out the code (below) stating:
+
+    ```python
+    with open('all_officers_information.txt', 'a') as file:
+        json.dump(company, file, indent=4)
+    return company   
+    ```
+
+If you run `$ python query_companies_house.py` again, you should see the response printed out in the console and you should have a file called `00000006.txt` which stores a dictionary of data holding active officers' information returned from the Companies House API for the company with the Company Registration Number "00000006".
+    
+This is how you can change the filename that your data from your Companies House queries will be written in. As you make multiple queries to the Companies House API, querying for different data you will want to change the filename to enable new files to be created with names that reflect the data that they contain.
     
 ## :three: Working with the Data
 

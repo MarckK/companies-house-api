@@ -119,10 +119,11 @@ def format_active_officers_info(query_comp_name, query_off_info, company_num):
 
     # print('\nSaving active officers\' information for {}:{} into file {}.txt ...'
     #       .format(company_name, company_num, company_num))
+
     # with open(company_num + '.txt', 'w') as file:
     #     json.dump(company, file, indent=4)
     # return company
-    # print('\nSaving active officers\' information...')
+
     with open('all_officers_information.txt', 'a') as file:
         json.dump(company, file, indent=4)
     return company
